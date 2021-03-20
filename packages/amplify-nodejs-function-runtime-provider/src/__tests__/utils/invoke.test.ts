@@ -1,10 +1,6 @@
 import * as path from 'path';
 import { invoke } from '../../utils/invoke';
 
-jest.mock('../../utils/executorPath', () => ({
-  executorPath: path.resolve(path.join(__dirname, '../../../lib/utils/execute.js')),
-}));
-
 const stubObjectEvent = {
   test: 'event',
 };

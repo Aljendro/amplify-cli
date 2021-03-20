@@ -1,14 +1,11 @@
-import { existsSync, createWriteStream } from 'fs-extra';
+import { existsSync } from 'fs-extra';
 import { InvokeOptions } from './invoke';
 import path from 'path';
-import exit from 'exit';
 
-process.on('message', async (options: InvokeOptions) => {
-  const parentPipe = createWriteStream('', { fd: 3 });
-  parentPipe.setDefaultEncoding('utf-8');
+export const invokeHelper = async (options: InvokeOptions): Promise<{ result?: any; error?: any }> => {
   try {
     const result = await invokeFunction(options);
-    parentPipe.write(JSON.stringify({ result }));
+    return { result };
   } catch (error) {
     let plainError = error;
     if (typeof error === 'object') {
@@ -17,10 +14,9 @@ process.on('message', async (options: InvokeOptions) => {
         return acc;
       }, {} as Record<string, any>);
     }
-    parentPipe.write(JSON.stringify({ error: plainError }));
+    return { error: plainError };
   }
-  exit(0);
-});
+};
 
 const invokeFunction = async (options: InvokeOptions) => {
   if (options.packageFolder) {
