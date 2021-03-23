@@ -32,6 +32,12 @@ const invokeFunction = async (options: InvokeOptions) => {
     throw new Error('Invalid lambda invoke request. No handler specified.');
   }
 
+  // process.env should be available in the handler module scope as well as in the handler function scope
+  // NOTE: Don't use Object spread (...) here!
+  // otherwise the values of the attached props are not coerced to a string
+  // e.g. process.env.foo = 1 should be coerced to '1' (string)
+  Object.assign(process.env, options.environment);
+
   const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
   const event = JSON.parse(options.event);
 
